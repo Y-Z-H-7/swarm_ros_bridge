@@ -76,6 +76,10 @@
 #define MSG_TYPE13 "std_msgs/Bool"
 #define MSG_CLASS13 std_msgs::Bool
 
+// 支持电量信息（sensor_msgs/BatteryState）
+#include <sensor_msgs/BatteryState.h>
+#define MSG_TYPE14 "sensor_msgs/BatteryState"
+#define MSG_CLASS14 sensor_msgs::BatteryState
 
 # define SUB_MAX 50 // max number of subscriber callbacks
 
