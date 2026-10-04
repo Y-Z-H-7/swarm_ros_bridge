@@ -177,6 +177,10 @@ ros::Subscriber topic_subscriber(std::string topic_name, std::string msg_type, r
     if (msg_type == MSG_TYPE13)
         return nh_sub<MSG_CLASS13>(topic_name, nh, i);
   #endif
+  #ifdef MSG_TYPE14
+    if (msg_type == MSG_TYPE14)
+        return nh_sub<MSG_CLASS14>(topic_name, nh, i);
+  #endif
 
     ROS_FATAL("Invalid ROS msg_type \"%s\" in configuration!", msg_type.c_str());
     exit(1);
@@ -235,6 +239,10 @@ ros::Publisher topic_publisher(std::string topic_name, std::string msg_type, ros
   #ifdef MSG_TYPE13
     if (msg_type == MSG_TYPE13)
         return nh.advertise<MSG_CLASS13>(topic_name, 10);
+  #endif
+  #ifdef MSG_TYPE14
+    if (msg_type == MSG_TYPE14)
+        return nh.advertise<MSG_CLASS14>(topic_name, 10);
   #endif
 
     ROS_FATAL("Invalid ROS msg_type \"%s\" in configuration!", msg_type.c_str());
@@ -295,7 +303,11 @@ void deserialize_publish(uint8_t* buffer_ptr, size_t msg_size, std::string msg_t
     if (msg_type == MSG_TYPE13)
         return deserialize_pub<MSG_CLASS13>(buffer_ptr, msg_size, i);
   #endif
-
+  #ifdef MSG_TYPE14
+    if (msg_type == MSG_TYPE14)
+        return deserialize_pub<MSG_CLASS14>(buffer_ptr, msg_size, i);
+  #endif
+  
     ROS_FATAL("Invalid ROS msg_type \"%s\" in configuration!", msg_type.c_str());
     exit(1);
 }
