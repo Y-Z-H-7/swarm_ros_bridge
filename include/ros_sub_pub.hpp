@@ -7,43 +7,75 @@
  *  it will generate template functions for different ros message types.
  *  Remember to add the dependent package in find_package() of ../CMakeLists.txt
  * 
- * Note: the sub_cb() and deserialize_pub() are only declared here,
- *  you should define them in you .cpp file according to your need.
- * 
  * @version 1.0
  * @date 2023-01-01
  * 
  * @license BSD 3-Clause License
  * @copyright (c) 2023, Peixuan Shu
  * All rights reserved.
- * 
  */
 
 #ifndef __ROS_SUB_PUB__
 #define __ROS_SUB_PUB__
 #include <ros/ros.h>
 
-#include <sensor_msgs/Imu.h>
-#define MSG_TYPE1 "sensor_msgs/Imu"
-#define MSG_CLASS1 sensor_msgs::Imu
+#include <exploration_manager/DroneState.h>
+#define MSG_TYPE1 "exploration_manager/DroneState"
+#define MSG_CLASS1 exploration_manager::DroneState
 
-#include <geometry_msgs/Twist.h>
-#define MSG_TYPE2 "geometry_msgs/Twist"
-#define MSG_CLASS2 geometry_msgs::Twist
+#include <exploration_manager/PairOpt.h>
+#define MSG_TYPE2 "exploration_manager/PairOpt"
+#define MSG_CLASS2 exploration_manager::PairOpt
 
-#include <std_msgs/String.h>
-#define MSG_TYPE3 "std_msgs/String"
-#define MSG_CLASS3 std_msgs::String
+#include <exploration_manager/PairOptResponse.h>
+#define MSG_TYPE3 "exploration_manager/PairOptResponse"
+#define MSG_CLASS3 exploration_manager::PairOptResponse
 
-// #include <xxx/yy.h>
-// #define MSG_TYPE4 "xxx/yy"
-// #define MSG_CLASS4 xxx::yy
+#include <bspline/Bspline.h>
+#define MSG_TYPE4 "bspline/Bspline"
+#define MSG_CLASS4 bspline::Bspline
 
-// ......
+#include <exploration_manager/HGrid.h>
+#define MSG_TYPE5 "exploration_manager/HGrid"
+#define MSG_CLASS5 exploration_manager::HGrid
 
-// #include <xxx/yy.h>
-// #define MSG_TYPE10 "xxx/yy"
-// #define MSG_CLASS10 xxx::yy
+#include <exploration_manager/GridTour.h>
+#define MSG_TYPE6 "exploration_manager/GridTour"
+#define MSG_CLASS6 exploration_manager::GridTour
+
+#include <plan_env/ChunkStamps.h>
+#define MSG_TYPE7 "plan_env/ChunkStamps"
+#define MSG_CLASS7 plan_env::ChunkStamps
+
+#include <plan_env/ChunkData.h>
+#define MSG_TYPE8 "plan_env/ChunkData"
+#define MSG_CLASS8 plan_env::ChunkData
+
+// 支持从 RViz 发送的 2D Nav Goal（geometry_msgs/PoseStamped）
+#include <geometry_msgs/PoseStamped.h>
+#define MSG_TYPE9 "geometry_msgs/PoseStamped"
+#define MSG_CLASS9 geometry_msgs::PoseStamped
+
+// 支持 RViz Marker 可视化（exploration 轨迹等）
+#include <visualization_msgs/Marker.h>
+#define MSG_TYPE10 "visualization_msgs/Marker"
+#define MSG_CLASS10 visualization_msgs::Marker
+
+// 支持占据栅格点云地图（sdf_map/occupancy_all_*）
+#include <sensor_msgs/PointCloud2.h>
+#define MSG_TYPE11 "sensor_msgs/PointCloud2"
+#define MSG_CLASS11 sensor_msgs::PointCloud2
+
+// 支持 RViz MarkerArray 可视化（viewpoints_* 等）
+#include <visualization_msgs/MarkerArray.h>
+#define MSG_TYPE12 "visualization_msgs/MarkerArray"
+#define MSG_CLASS12 visualization_msgs::MarkerArray
+
+// 支持任务级触发信号（如降落请求）
+#include <std_msgs/Bool.h>
+#define MSG_TYPE13 "std_msgs/Bool"
+#define MSG_CLASS13 std_msgs::Bool
+
 
 # define SUB_MAX 50 // max number of subscriber callbacks
 
@@ -129,6 +161,19 @@ ros::Subscriber topic_subscriber(std::string topic_name, std::string msg_type, r
     if (msg_type == MSG_TYPE10)
         return nh_sub<MSG_CLASS10>(topic_name, nh, i);
   #endif  
+  #ifdef MSG_TYPE11
+    if (msg_type == MSG_TYPE11)
+        return nh_sub<MSG_CLASS11>(topic_name, nh, i);
+  #endif  
+  #ifdef MSG_TYPE12
+    if (msg_type == MSG_TYPE12)
+        return nh_sub<MSG_CLASS12>(topic_name, nh, i);
+  #endif  
+  #ifdef MSG_TYPE13
+    if (msg_type == MSG_TYPE13)
+        return nh_sub<MSG_CLASS13>(topic_name, nh, i);
+  #endif
+
     ROS_FATAL("Invalid ROS msg_type \"%s\" in configuration!", msg_type.c_str());
     exit(1);
 }
@@ -175,6 +220,19 @@ ros::Publisher topic_publisher(std::string topic_name, std::string msg_type, ros
     if (msg_type == MSG_TYPE10)
         return nh.advertise<MSG_CLASS10>(topic_name, 10);
   #endif
+  #ifdef MSG_TYPE11
+    if (msg_type == MSG_TYPE11)
+        return nh.advertise<MSG_CLASS11>(topic_name, 10);
+  #endif
+  #ifdef MSG_TYPE12
+    if (msg_type == MSG_TYPE12)
+        return nh.advertise<MSG_CLASS12>(topic_name, 10);
+  #endif
+  #ifdef MSG_TYPE13
+    if (msg_type == MSG_TYPE13)
+        return nh.advertise<MSG_CLASS13>(topic_name, 10);
+  #endif
+
     ROS_FATAL("Invalid ROS msg_type \"%s\" in configuration!", msg_type.c_str());
     exit(1);
 }
@@ -221,6 +279,19 @@ void deserialize_publish(uint8_t* buffer_ptr, size_t msg_size, std::string msg_t
     if (msg_type == MSG_TYPE10)
         return deserialize_pub<MSG_CLASS10>(buffer_ptr, msg_size, i);
   #endif
+  #ifdef MSG_TYPE11
+    if (msg_type == MSG_TYPE11)
+        return deserialize_pub<MSG_CLASS11>(buffer_ptr, msg_size, i);
+  #endif
+  #ifdef MSG_TYPE12
+    if (msg_type == MSG_TYPE12)
+        return deserialize_pub<MSG_CLASS12>(buffer_ptr, msg_size, i);
+  #endif
+  #ifdef MSG_TYPE13
+    if (msg_type == MSG_TYPE13)
+        return deserialize_pub<MSG_CLASS13>(buffer_ptr, msg_size, i);
+  #endif
+
     ROS_FATAL("Invalid ROS msg_type \"%s\" in configuration!", msg_type.c_str());
     exit(1);
 }
