@@ -1,9 +1,0 @@
-<?xml version="1.0"?>
-<launch>
-  <arg name="mavros_ns" default="/mavros" />
-  <node pkg="swarm_ros_bridge" type="bridge_node" name="swarm_bridge_node_drone3" output="screen" >
-    <rosparam command="load" file="$(find swarm_ros_bridge)/config/ros_topics_drone3.yaml" />
-    <remap from="/mavros/battery" to="$(arg mavros_ns)/battery" />
-    <remap from="/mavros/local_position/pose" to="$(arg mavros_ns)/local_position/pose" />
-  </node>
-</launch>

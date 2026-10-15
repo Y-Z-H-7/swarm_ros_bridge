@@ -278,6 +278,17 @@ def generate_launch(drone_id: int) -> str:
     ])
 
 
+def choose_launch_dir(output_dir: str, explicit_launch_dir: str = None) -> str:
+    """在 ROS package 内生成配置时，launch 只写入 package/launch。"""
+    if explicit_launch_dir:
+        return explicit_launch_dir
+    package_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+    output_path = os.path.abspath(output_dir)
+    if os.path.commonpath((package_root, output_path)) == package_root:
+        return os.path.join(package_root, "launch")
+    return output_dir
+
+
 # ─── 交互式输入 ─────────────────────────────────────────────────────
 
 def interactive_mode() -> Tuple[List[str], str, str, int]:
@@ -360,7 +371,7 @@ def main():
     parser.add_argument("--output-dir", type=str, default="./output",
                         help="输出目录 (默认 ./output)")
     parser.add_argument("--launch-dir", type=str,
-                        help="launch 输出目录（默认与 --output-dir 相同；部署时设为 ./launch）")
+                        help="launch 输出目录（包内默认 ./launch；包外默认与 --output-dir 相同）")
     parser.add_argument("--start-port", type=int, default=DRONE_SEND_START_PORT,
                         help=f"无人机发送 topic 起始端口 (默认 {DRONE_SEND_START_PORT})")
 
@@ -397,7 +408,7 @@ def main():
 
     # 创建输出目录
     os.makedirs(output_dir, exist_ok=True)
-    launch_dir = args.launch_dir or output_dir
+    launch_dir = choose_launch_dir(output_dir, args.launch_dir)
     os.makedirs(launch_dir, exist_ok=True)
 
     print()

@@ -74,6 +74,11 @@ class TelemetryConfigTests(unittest.TestCase):
             self.assertEqual(remaps["/mavros/battery"], "$(arg mavros_ns)/battery")
             self.assertEqual(remaps["/mavros/local_position/pose"], "$(arg mavros_ns)/local_position/pose")
 
+    def test_generator_writes_only_one_launch_per_drone_inside_package(self):
+        self.assertEqual(Path(generator.choose_launch_dir(str(ROOT / "scripts/temp"))), ROOT / "launch")
+        self.assertEqual(Path(generator.choose_launch_dir(str(ROOT / "config"))), ROOT / "launch")
+        self.assertFalse(list((ROOT / "scripts/temp").glob("bridge_drone*.launch")))
+
     def test_regeneration_preserves_deployed_files_and_snapshots(self):
         gcs = self.configs["gcs"]
         ips = [gcs["IP"][f"robot{i}"] for i in range(1, 4)]
@@ -84,7 +89,8 @@ class TelemetryConfigTests(unittest.TestCase):
         for filename, content in generated.items():
             folder = "launch" if filename.endswith(".launch") else "config"
             self.assertEqual((ROOT / folder / filename).read_text(encoding="utf-8"), content)
-            self.assertEqual((ROOT / "scripts/temp" / filename).read_text(encoding="utf-8"), content)
+            if filename.endswith(".yaml"):
+                self.assertEqual((ROOT / "scripts/temp" / filename).read_text(encoding="utf-8"), content)
 
 
 if __name__ == "__main__":
