@@ -19,6 +19,7 @@
 #define __ROS_SUB_PUB__
 #include <ros/ros.h>
 
+<<<<<<< Updated upstream
 #include <exploration_manager/DroneState.h>
 #define MSG_TYPE1 "exploration_manager/DroneState"
 #define MSG_CLASS1 exploration_manager::DroneState
@@ -67,10 +68,73 @@
 #define MSG_CLASS11 sensor_msgs::PointCloud2
 
 // 支持 RViz MarkerArray 可视化（viewpoints_* 等）
+=======
+// #include <sensor_msgs/Imu.h>
+// #define MSG_TYPE1 "sensor_msgs/Imu"
+// #define MSG_CLASS1 sensor_msgs::Imu
+
+// #include <geometry_msgs/Twist.h>
+// #define MSG_TYPE2 "geometry_msgs/Twist"
+// #define MSG_CLASS2 geometry_msgs::Twist
+
+// #include <std_msgs/String.h>
+// #define MSG_TYPE3 "std_msgs/String"
+// #define MSG_CLASS3 std_msgs::String
+
+//26new
+#include <exploration_manager/DroneState.h>
+#define MSG_TYPE1 "exploration_manager/DroneState"
+#define MSG_CLASS1 exploration_manager::DroneState
+
+#include <exploration_manager/PairOpt.h>
+#define MSG_TYPE2 "exploration_manager/PairOpt"
+#define MSG_CLASS2 exploration_manager::PairOpt
+
+#include <exploration_manager/PairOptResponse.h>
+#define MSG_TYPE3 "exploration_manager/PairOptResponse"
+#define MSG_CLASS3 exploration_manager::PairOptResponse
+
+#include <bspline/Bspline.h>
+#define MSG_TYPE4 "bspline/Bspline"
+#define MSG_CLASS4 bspline::Bspline
+
+#include <exploration_manager/HGrid.h>
+#define MSG_TYPE5 "exploration_manager/HGrid"
+#define MSG_CLASS5 exploration_manager::HGrid
+
+#include <exploration_manager/GridTour.h>
+#define MSG_TYPE6 "exploration_manager/GridTour"
+#define MSG_CLASS6 exploration_manager::GridTour
+
+#include <plan_env/ChunkStamps.h>
+#define MSG_TYPE7 "plan_env/ChunkStamps"
+#define MSG_CLASS7 plan_env::ChunkStamps
+
+#include <plan_env/ChunkData.h>
+#define MSG_TYPE8 "plan_env/ChunkData"
+#define MSG_CLASS8 plan_env::ChunkData
+
+// 新增：可视化标记与全局点云
+#include <visualization_msgs/Marker.h>
+#define MSG_TYPE9 "visualization_msgs/Marker"
+#define MSG_CLASS9 visualization_msgs::Marker
+
+#include <sensor_msgs/PointCloud2.h>
+#define MSG_TYPE10 "sensor_msgs/PointCloud2"
+#define MSG_CLASS10 sensor_msgs::PointCloud2
+
+// 新增：来自地面站的一键起飞姿态目标
+#include <geometry_msgs/PoseStamped.h>
+#define MSG_TYPE11 "geometry_msgs/PoseStamped"
+#define MSG_CLASS11 geometry_msgs::PoseStamped
+
+// 新增：MarkerArray 可视化
+>>>>>>> Stashed changes
 #include <visualization_msgs/MarkerArray.h>
 #define MSG_TYPE12 "visualization_msgs/MarkerArray"
 #define MSG_CLASS12 visualization_msgs::MarkerArray
 
+<<<<<<< Updated upstream
 // 支持任务级触发信号（如降落请求）
 #include <std_msgs/Bool.h>
 #define MSG_TYPE13 "std_msgs/Bool"
@@ -80,6 +144,12 @@
 #include <sensor_msgs/BatteryState.h>
 #define MSG_TYPE14 "sensor_msgs/BatteryState"
 #define MSG_CLASS14 sensor_msgs::BatteryState
+=======
+// 
+#include <std_msgs/Bool.h>
+#define MSG_TYPE13 "std_msgs/Bool"
+#define MSG_CLASS13 std_msgs::Bool
+>>>>>>> Stashed changes
 
 # define SUB_MAX 50 // max number of subscriber callbacks
 
@@ -172,6 +242,7 @@ ros::Subscriber topic_subscriber(std::string topic_name, std::string msg_type, r
   #ifdef MSG_TYPE12
     if (msg_type == MSG_TYPE12)
         return nh_sub<MSG_CLASS12>(topic_name, nh, i);
+<<<<<<< Updated upstream
   #endif  
   #ifdef MSG_TYPE13
     if (msg_type == MSG_TYPE13)
@@ -182,6 +253,13 @@ ros::Subscriber topic_subscriber(std::string topic_name, std::string msg_type, r
         return nh_sub<MSG_CLASS14>(topic_name, nh, i);
   #endif
 
+=======
+  #endif
+  #ifdef MSG_TYPE13
+    if (msg_type == MSG_TYPE13)
+        return nh_sub<MSG_CLASS13>(topic_name, nh, i);
+  #endif  
+>>>>>>> Stashed changes
     ROS_FATAL("Invalid ROS msg_type \"%s\" in configuration!", msg_type.c_str());
     exit(1);
 }
@@ -236,15 +314,25 @@ ros::Publisher topic_publisher(std::string topic_name, std::string msg_type, ros
     if (msg_type == MSG_TYPE12)
         return nh.advertise<MSG_CLASS12>(topic_name, 10);
   #endif
+<<<<<<< Updated upstream
+=======
+  #ifdef MSG_TYPE12
+    if (msg_type == MSG_TYPE12)
+        return nh.advertise<MSG_CLASS12>(topic_name, 10);
+  #endif
+>>>>>>> Stashed changes
   #ifdef MSG_TYPE13
     if (msg_type == MSG_TYPE13)
         return nh.advertise<MSG_CLASS13>(topic_name, 10);
   #endif
+<<<<<<< Updated upstream
   #ifdef MSG_TYPE14
     if (msg_type == MSG_TYPE14)
         return nh.advertise<MSG_CLASS14>(topic_name, 10);
   #endif
 
+=======
+>>>>>>> Stashed changes
     ROS_FATAL("Invalid ROS msg_type \"%s\" in configuration!", msg_type.c_str());
     exit(1);
 }
@@ -303,13 +391,18 @@ void deserialize_publish(uint8_t* buffer_ptr, size_t msg_size, std::string msg_t
     if (msg_type == MSG_TYPE13)
         return deserialize_pub<MSG_CLASS13>(buffer_ptr, msg_size, i);
   #endif
+<<<<<<< Updated upstream
   #ifdef MSG_TYPE14
     if (msg_type == MSG_TYPE14)
         return deserialize_pub<MSG_CLASS14>(buffer_ptr, msg_size, i);
   #endif
   
+=======
+>>>>>>> Stashed changes
     ROS_FATAL("Invalid ROS msg_type \"%s\" in configuration!", msg_type.c_str());
     exit(1);
 }
 
 #endif
+
+    

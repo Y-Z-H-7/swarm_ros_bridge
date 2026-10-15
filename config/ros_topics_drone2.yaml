@@ -1,0 +1,220 @@
+      
+### default supported ROS message types:
+# sensor_msgs/Imu
+# geometry_msgs/Twist
+# std_msgs/String
+# (modify/add in ros_sub_pub.hpp if you need more)
+### max number of send_topics supported: 50
+
+### list all <IPname: IP> here (IPname can be set arbitrarily) ###
+IP:
+  self: '*'   # '*' stands for all self IPs
+  robot1: 192.168.0.121 #nuc1
+  robot2: 192.168.0.195 #fly
+  robot3: 192.168.0.243 #nuc2
+  gcs: 192.168.0.137      # 地面站自己的 IP 
+
+####### Send these ROS messages to remote robots #######
+## if no send_topics needed, comment all these out
+send_topics:
+
+    #26new
+    # DroneState: 无人机位置、速度、偏航角 
+  - topic_name: /swarm_expl/drone_state_send_2
+    msg_type: exploration_manager/DroneState
+    max_freq: 25
+    srcIP: self
+    srcPort: 5001
+
+  #   # PairOpt: 配对优化请求
+  - topic_name: /swarm_expl/pair_opt_send_2
+    msg_type: exploration_manager/PairOpt
+    max_freq: 20
+    srcIP: self
+    srcPort: 5002
+
+  #   # PairOptResponse: 配对优化响应
+  - topic_name: /swarm_expl/pair_opt_res_send_2
+    msg_type: exploration_manager/PairOptResponse
+    max_freq: 20
+    srcIP: self
+    srcPort: 5003
+
+  #   # Bspline: 轨迹信息
+  - topic_name: /planning/swarm_traj_send_2
+    msg_type: bspline/Bspline
+    max_freq: 20
+    srcIP: self
+    srcPort: 5004
+
+  #   # HGrid: 分层网格信息
+  - topic_name: /swarm_expl/hgrid_send_2
+    msg_type: exploration_manager/HGrid
+    max_freq: 20
+    srcIP: self
+    srcPort: 5005
+
+  #   # GridTour: 当前网格巡航序列
+  - topic_name: /swarm_expl/grid_tour_send_2
+    msg_type: exploration_manager/GridTour
+    max_freq: 20
+    srcIP: self
+    srcPort: 5006
+
+  #   # ChunkStamps: 轻量级的地图元数据信息
+  - topic_name: /multi_map_manager/chunk_stamps_send_2
+    msg_type: plan_env/ChunkStamps
+    max_freq: 20
+    srcIP: self
+    srcPort: 5007
+
+  #   # ChunkData: 实际的栅格地图数据
+  - topic_name: /multi_map_manager/chunk_data_send_2
+    msg_type: plan_env/ChunkData
+    max_freq: 20
+    srcIP: self
+    srcPort: 5008
+
+  #   # viewpoints: 可视化用的视点 Marker
+  - topic_name: /planning_vis/viewpoints_2
+    msg_type: visualization_msgs/Marker
+    max_freq: 150
+    srcIP: self
+    srcPort: 5009
+
+  #   # occupancy_all: 全局稠密占据点云（带宽较大，频率适当调低）todo
+  - topic_name: /sdf_map/occupancy_all_2
+    msg_type: sensor_msgs/PointCloud2
+    max_freq: 2
+    srcIP: self
+    srcPort: 5010
+
+  #   # trajectory: 可视化用的轨迹 Marker
+  - topic_name: /planning/travel_traj_2
+    msg_type: visualization_msgs/Marker
+    max_freq: 9
+    srcIP: self
+    srcPort: 5011
+
+  - topic_name: /planning/position_cmd_vis_2
+    msg_type: visualization_msgs/Marker
+    max_freq: 9
+    srcIP: self
+    srcPort: 5012
+
+####### receive these ROS messages from remote robots #######
+## if no recv_topics needed, comment all these out
+recv_topics:
+  # 接收来自地面站 (GCS) 的一键起飞触发信号
+  - topic_name: /move_base_simple/goal
+    msg_type: geometry_msgs/PoseStamped
+    srcIP: gcs
+    srcPort: 5099
+
+  - topic_name: /uav2/mission/land_request
+    msg_type: std_msgs/Bool
+    max_freq: 50
+    srcIP: gcs
+    srcPort: 5098  # send_topics 的端口必须互不相同
+
+#接收无人机1(nuc1)话题
+  # 接收来自其他无人机的状态
+  - topic_name: /swarm_expl/drone_state_recv_1
+    msg_type: exploration_manager/DroneState
+    srcIP: robot1    
+    srcPort: 5001
+
+  # # 接收配对优化请求
+  - topic_name: /swarm_expl/pair_opt_recv_1
+    msg_type: exploration_manager/PairOpt
+    srcIP: robot1
+    srcPort: 5002
+
+  # # 接收配对优化响应
+  - topic_name: /swarm_expl/pair_opt_res_recv_1
+    msg_type: exploration_manager/PairOptResponse
+    srcIP: robot1
+    srcPort: 5003
+
+  # # 接收轨迹信息
+  - topic_name: /planning/swarm_traj_recv_1
+    msg_type: bspline/Bspline
+    srcIP: robot1
+    srcPort: 5004
+
+  # # 接收分层网格信息
+  - topic_name: /swarm_expl/hgrid_recv_1
+    msg_type: exploration_manager/HGrid
+    srcIP: robot1
+    srcPort: 5005
+
+  # # 接收当前网格巡航序列
+  - topic_name: /swarm_expl/grid_tour_recv_1
+    msg_type: exploration_manager/GridTour
+    srcIP: robot1
+    srcPort: 5006
+
+  # # 接收轻量级的地图元数据信息
+  - topic_name: /multi_map_manager/chunk_stamps_recv_1
+    msg_type: plan_env/ChunkStamps
+    srcIP: robot1
+    srcPort: 5007
+
+  # # 接收实际的栅格地图数据
+  - topic_name: /multi_map_manager/chunk_data_recv_1
+    msg_type: plan_env/ChunkData
+    srcIP: robot1
+    srcPort: 5008
+
+#接收无人机3(nuc2)话题
+  # 接收来自其他无人机的状态
+  - topic_name: /swarm_expl/drone_state_recv_3
+    msg_type: exploration_manager/DroneState
+    srcIP: robot3    # 本地测试时使用，实机改为drone1/drone2
+    srcPort: 5001
+
+  # # 接收配对优化请求
+  - topic_name: /swarm_expl/pair_opt_recv_3
+    msg_type: exploration_manager/PairOpt
+    srcIP: robot3
+    srcPort: 5002
+
+  # # 接收配对优化响应
+  - topic_name: /swarm_expl/pair_opt_res_recv_3
+    msg_type: exploration_manager/PairOptResponse
+    srcIP: robot3
+    srcPort: 5003
+
+  # # 接收轨迹信息
+  - topic_name: /planning/swarm_traj_recv_3
+    msg_type: bspline/Bspline
+    srcIP: robot3
+    srcPort: 5004
+
+  # # 接收分层网格信息
+  - topic_name: /swarm_expl/hgrid_recv_3
+    msg_type: exploration_manager/HGrid
+    srcIP: robot3
+    srcPort: 5005
+
+  # # 接收当前网格巡航序列
+  - topic_name: /swarm_expl/grid_tour_recv_3
+    msg_type: exploration_manager/GridTour
+    srcIP: robot3
+    srcPort: 5006
+
+  # # 接收轻量级的地图元数据信息
+  - topic_name: /multi_map_manager/chunk_stamps_recv_3
+    msg_type: plan_env/ChunkStamps
+    srcIP: robot3
+    srcPort: 5007
+
+  # # 接收实际的栅格地图数据
+  - topic_name: /multi_map_manager/chunk_data_recv_3
+    msg_type: plan_env/ChunkData
+    srcIP: robot3
+    srcPort: 5008
+
+  
+
+    

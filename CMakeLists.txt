@@ -4,9 +4,13 @@ project(swarm_ros_bridge)
 add_compile_options(-std=c++14)
 
 #26new
+<<<<<<< Updated upstream
 # 显式加入本机 ROS 安装路径，避免找不到 roscpp 等包
 list(APPEND CMAKE_PREFIX_PATH "/opt/ros/noetic")
 list(APPEND CMAKE_PREFIX_PATH "/home/ubuntu20/racer/devel")
+=======
+list(APPEND CMAKE_PREFIX_PATH "/home/fly/racer/devel")
+>>>>>>> Stashed changes
 
 find_package(catkin REQUIRED COMPONENTS
   roscpp
@@ -14,26 +18,40 @@ find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
   sensor_msgs
   visualization_msgs
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
   message_generation
 )
 
 catkin_package(
    INCLUDE_DIRS include
+   CATKIN_DEPENDS roscpp std_msgs geometry_msgs sensor_msgs visualization_msgs
 )
 
 
 
+<<<<<<< Updated upstream
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}
 )
 
 # 手动添加racer的消息头文件路径（不链接库）
+=======
+>>>>>>> Stashed changes
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}
   /home/ubuntu20/racer/devel/include
+)
+
+# 手动添加racer的消息头文件路径（不链接库）
+include_directories(
+  include
+  ${catkin_INCLUDE_DIRS}
+  /home/fly/racer/devel/include
 )
 
 add_executable(bridge_node src/bridge_node.cpp)
