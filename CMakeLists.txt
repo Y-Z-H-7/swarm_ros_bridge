@@ -3,10 +3,10 @@ project(swarm_ros_bridge)
 
 add_compile_options(-std=c++14)
 
-#26new
-# 显式加入本机 ROS 安装路径，避免找不到 roscpp 等包
+# 所有设备共用源码；RACER 路径按当前用户解析，也可通过 -DRACER_WORKSPACE 覆盖。
+set(RACER_WORKSPACE "$ENV{HOME}/racer" CACHE PATH "RACER catkin workspace")
 list(APPEND CMAKE_PREFIX_PATH "/opt/ros/noetic")
-list(APPEND CMAKE_PREFIX_PATH "/home/ubuntu20/racer/devel")
+list(APPEND CMAKE_PREFIX_PATH "${RACER_WORKSPACE}/devel")
 
 find_package(catkin REQUIRED COMPONENTS
   roscpp
@@ -33,7 +33,7 @@ include_directories(
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}
-  /home/ubuntu20/racer/devel/include
+  "${RACER_WORKSPACE}/devel/include"
 )
 
 add_executable(bridge_node src/bridge_node.cpp)
