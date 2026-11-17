@@ -1,0 +1,19 @@
+IP:
+  robot3: 192.168.0.243
+send_topics: []
+recv_topics:
+  - topic_name: /bridge_test/received/state
+    msg_type: geometry_msgs/PoseStamped
+    max_freq: 50
+    srcIP: robot3
+    srcPort: 5511
+  - topic_name: /bridge_test/received/battery
+    msg_type: sensor_msgs/BatteryState
+    max_freq: 50
+    srcIP: robot3
+    srcPort: 5512
+  - topic_name: /bridge_test/received/map
+    msg_type: sensor_msgs/PointCloud2
+    max_freq: 50
+    srcIP: robot3
+    srcPort: 5513

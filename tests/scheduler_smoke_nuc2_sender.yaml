@@ -1,0 +1,23 @@
+IP:
+  self: '*'
+send_topics:
+  - topic_name: /bridge_test/drone_state_send_3
+    msg_type: geometry_msgs/PoseStamped
+    max_freq: 50
+    srcIP: self
+    srcPort: 5511
+  - topic_name: /bridge_test/mavros/battery
+    msg_type: sensor_msgs/BatteryState
+    max_freq: 50
+    srcIP: self
+    srcPort: 5512
+  - topic_name: /bridge_test/occupancy_all_3
+    msg_type: sensor_msgs/PointCloud2
+    max_freq: 50
+    srcIP: self
+    srcPort: 5513
+recv_topics: []
+scheduler:
+  enabled: true
+  budget_bytes_per_second: 50000
+  burst_bytes: 524288

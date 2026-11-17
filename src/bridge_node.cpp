@@ -22,6 +22,21 @@
  */
 
 #include "bridge_node.hpp"
+#include "send_scheduler.hpp"
+#include <cmath>
+
+std::unique_ptr<SendScheduler> scheduler;
+
+template <typename T>
+bool unusable_battery_frame(const T &)
+{
+  return false;
+}
+
+bool unusable_battery_frame(const sensor_msgs::BatteryState &msg)
+{
+  return !std::isfinite(msg.percentage) || msg.percentage < 0.0f || msg.percentage > 1.0f;
+}
 
 // /* send messages frequency control */
 // // this is the original freq control func that has been deprecated
@@ -64,6 +79,11 @@ bool send_freq_control(int i)
 template <typename T, int i>
 void sub_cb(const T &msg)
 {
+  // MAVROS can publish an empty ID 0 frame just before a valid battery frame.
+  // Drop the empty frame before it consumes the topic's frequency allowance.
+  if (unusable_battery_frame(msg)) {
+    return;
+  }
   /* frequency control */
   auto ignore_flag = send_freq_control(i);
   if (ignore_flag){
@@ -76,6 +96,11 @@ void sub_cb(const T &msg)
   std::unique_ptr<uint8_t> send_buffer(new uint8_t[data_len]);  // create a dynamic length array
   ser::OStream stream(send_buffer.get(), data_len);
   ser::serialize(stream, msg);
+
+  if (scheduler) {
+    scheduler->enqueue(i, send_buffer.get(), data_len);
+    return;
+  }
 
   /* zmq send message */
   zmqpp::message send_array;
@@ -165,7 +190,7 @@ void recv_func(int i)
 void stop_send(int i)
 {
   // senders[i]->unbind(std::string const &endpoint);
-  senders[i]->close(); // close the send socket
+  if (!scheduler) senders[i]->close(); // close the legacy send socket
   topic_subs[i].shutdown(); // unsubscribe
 }
 
@@ -279,9 +304,29 @@ int main(int argc, char **argv)
     std::cout << topic.name << "  (from " << recv_topic_xml["srcIP"]  << ")" << std::endl;
   }
 
+  bool scheduler_enabled = false;
+  nh.param("scheduler/enabled", scheduler_enabled, false);
+  if (scheduler_enabled) {
+    int budget = 0, burst = 0;
+    nh.param("scheduler/budget_bytes_per_second", budget, 0);
+    nh.param("scheduler/burst_bytes", burst, 0);
+    if (budget <= 0 || burst <= 0) {
+      ROS_FATAL("[bridge scheduler] enabled requires positive budget_bytes_per_second and burst_bytes");
+      return 4;
+    }
+    try {
+      scheduler.reset(new SendScheduler(context, sendTopics, budget, static_cast<size_t>(burst)));
+      scheduler->start();
+    } catch (const std::exception &e) {
+      ROS_FATAL("[bridge scheduler] cannot start: %s", e.what());
+      return 5;
+    }
+    ROS_INFO("[bridge scheduler] enabled, budget=%d B/s, burst=%d B", budget, burst);
+  }
+
   // ********************* zmq socket initialize ***************************
   // send sockets (zmq socket PUB mode)
-  for (int32_t i=0; i < len_send; ++i)
+  for (int32_t i=0; !scheduler_enabled && i < len_send; ++i)
   {
     const std::string url = "tcp://" + sendTopics[i].ip + ":" + std::to_string(sendTopics[i].port);
     std::unique_ptr<zmqpp::socket> sender(new zmqpp::socket(context, zmqpp::socket_type::pub));
@@ -336,6 +381,7 @@ int main(int argc, char **argv)
   for (int32_t i=0; i < len_send; ++i){
     stop_send(i);
   }
+  if (scheduler) scheduler->stop();
 
   for (int32_t i=0; i < len_recv; ++i){
     stop_recv(i);
