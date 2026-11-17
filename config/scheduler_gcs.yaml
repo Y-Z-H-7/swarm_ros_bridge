@@ -1,0 +1,5 @@
+# Saved by the ground station scheduler settings page. Disabled by default.
+scheduler:
+  enabled: false
+  budget_bytes_per_second: 0
+  burst_bytes: 0
